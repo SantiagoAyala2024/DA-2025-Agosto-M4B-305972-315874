@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Sistema de Peajes</title>
+    <link rel="stylesheet" href="menuAdmin.css">
+    <script src="vistaWeb.js"></script>
+    <script src="sse.js"></script>
+</head>
+<body>
+    <script src="utilesVista.js"></script>
+    <div class="menu-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>Panel de Administración</h1>
+                <div class="user-info">
+                    <span id="nombreAdmin"></span>
+                    <button class="btn-salir" id="btn-cerrar-sesion">Salir</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h2>Gestión del Sistema</h2>
+            <p class="descripcion">Seleccione una opción para administrar el sistema de peajes</p>
+
+            <div class="menu-grid">
+                <!-- Emular Tránsito -->
+                <a href="emularTransito.html" class="menu-item">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15 4H5v16h14V8h-4V4zM3 2.992C3 2.444 3.447 2 3.999 2H16l5 5v13.993A1 1 0 0 1 20.007 22H3.993A1 1 0 0 1 3 21.008V2.992z"/>
+                            <path d="M13 12v4h-2v-4H8l4-4 4 4h-3z"/>
+                        </svg>
+                    </div>
+                    <h3>Emular Tránsito</h3>
+                    <p>Simular el paso de vehículos por los peajes</p>
+                </a>
+
+                <!-- Cambiar Estado -->
+                <a href="cambiarEstado.html" class="menu-item">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-7h2v6h-2v-6zm0-4h2v2h-2V9z"/>
+                        </svg>
+                    </div>
+                    <h3>Cambiar Estado</h3>
+                    <p>Modificar el estado de los propietarios</p>
+                </a>
+
+                <!-- Asignar Bonificaciones -->
+                <a href="asignarBonificaciones.html" class="menu-item">
+                    <div class="menu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-3.5-8v2H11v2h2v-2h1.5v-2h-4zm8.5-.5v-5l-5-3-5 3v5l5 3 5-3z"/>
+                        </svg>
+                    </div>
+                    <h3>Asignar Bonificaciones</h3>
+                    <p>Gestionar bonificaciones de propietarios</p>
+                </a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2025 - Sistema de Administración de Peajes</p>
+        </footer>
+    </div>
+
+    <script>
+        urlIniciarVista = 'menu/vistaConectada';
+        urlRegistroSSE = 'menu/registrarSSE';
+
+
+        const nombreAdmin = document.getElementById('nombreAdmin');
+       
+        function mostrar_admin(nombre) {
+			nombreAdmin.innerHTML = 'Administrador: ' + nombre;
+		}
+
+        document.getElementById('btn-cerrar-sesion').addEventListener('click', function() {
+            submit('/acceso/logoutAdmin', '');
+        }); 
+
+        function mostrar_logoutExitoso(urlDestino) {
+            window.location.href = urlDestino;
+        }
+
+        function procesarErrorSubmit(status,text){
+            if(status==400){
+                window.location.href="login-admin.html";
+            }
+        }
+
+    </script> 
+</body>
+</html>

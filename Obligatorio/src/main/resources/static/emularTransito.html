@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emular tránsito</title>
+    <link rel="stylesheet" href="emularTransito.css">
+    <script src="vistaWeb.js"></script>
+</head>
+<body>
+    <script src="utilesVista.js"></script>
+    <div class="emular-container">
+        <h1>Emular tránsito</h1>
+        <p class="descripcion">Seleccione un puesto, verifique sus tarifas, ingrese una matrícula y emule un tránsito.</p>
+
+        <form id="formEmularTransito" method="POST" action="/emularTransito" class="form-emular">
+            <!-- Selector de puesto -->
+            <div class="form-group">
+                <label for="puesto">Puesto</label>
+                <select id="puesto" name="posPuesto" required>
+                </select>
+            </div>
+
+            <!-- Tarifas del puesto -->
+            <div class="tarifas-container">
+                <div id="tablaTarias"></div>
+                <p class="nota-tarifas">Se muestran categoría y monto actuales del puesto seleccionado.</p>
+            </div>
+
+            <!-- Datos del tránsito -->
+            <div class="form-group">
+                <label for="matricula">Matrícula</label>
+                <input type="text" id="matricula" name="matricula" placeholder="Ej: ABC1234" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaHora">Fecha y hora del tránsito</label>
+                <input type="datetime-local" id="fechaHora" name="fechaHora" required>
+            </div>
+
+            <button type="submit" class="btn-emular" id="btnRegistrar">Emular tránsito</button>
+        </form>
+
+        <!-- Resultado de la emulación -->
+        <div id="resultadoEmulacion" class="resultado-container" style="display: none;">
+           
+        </div>
+
+        <!-- Mensajes de error -->
+        <div id="mensajeError" class="mensaje-error" style="display: none;"></div>
+
+        <footer>
+            <p>© 2025 - Emular tránsitos</p>
+        </footer>
+    </div>
+    <script>
+
+        urlIniciarVista = "/transito/vistaConectada";
+        const formBuscar = document.getElementById('formEmularTransito');
+        const matricula = document.getElementById('matricula');
+        const puestos = document.getElementById('puesto');
+        const tablaTarias = document.getElementById('tablaTarias');
+        const tablaResultadoEmulacion = document.getElementById('resultadoEmulacion');
+        const btnGuardar = document.getElementById('btnRegistrar');
+
+        formBuscar.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submit("/transito/emularTransito", serializarFormulario('formEmularTransito'));
+        });
+
+        function mostrar_habilitarIngreso(habilitar) {
+            document.getElementById('puesto').value=-1;
+            document.getElementById('puesto').disabled= !habilitar;
+        }
+
+        function mostrar_puestos(datosPuestos){
+        const html = crearListaDesdeJson({
+            data: datosPuestos,
+            campoMostrar: 'nombre',
+            multiple : false,
+            mostrarOpcionInicial : true, 
+            id : 'puesto',
+            onSelectItem: function(indice, objeto){
+            submit('/transito/tarifasPuesto', 'posPuesto=' + indice);
+            }
+        });
+
+       puestos.innerHTML = html;
+                     
+        }
+
+        function mostrar_tarifas(tarifas){
+            tablaTarias.innerHTML = crearTablaDesdeJson(tarifas);
+        }
+
+        function mostrar_resultado(emulacion){
+            tablaResultadoEmulacion.innerHTML = "Propietario: " + emulacion.nombre + "<br>" +
+                               "Categoria: " + emulacion.categoria + "<br>" +
+                               "Bonificacion: "+ emulacion.bonificacion.nombre + "<br>" + 
+                               "Costo del tránsito: "  + emulacion.monto + "<br>" + 
+                               "Saldo luego del tránsito: $ " + emulacion.total;
+        }
+
+        function mostrar_transito(transito){
+            const cont = document.getElementById('resultadoEmulacion');
+            if(!transito){
+                cont.style.display = 'none';
+                return;
+            }
+            let html = '';
+            if(transito.puesto && transito.puesto.nombre){
+                html += `<div class="res-line"><strong>Puesto:</strong> ${transito.puesto.nombre}</div>`;
+            }
+            if(transito.vehiculo){
+                const v = transito.vehiculo;
+                if(v.propietario){
+                    const p = v.propietario;
+                    html += `<div class="res-section"><strong>Propietario:</strong>${p.nombreCompleto ?? ''}</div>`;
+                    html += `<div class="res-line"><strong>Categoria:</strong> ${v.categoria ?? 0}</div>`;
+                    html += `<div class="res-line"><strong>Bonificacion:</strong> ${transito.nombreBonificacion ?? 'Sin bonificación'}</div>`;
+                    html += `<div class="res-line">Costo del transito: ${transito.monto ?? ''}</div>`;
+                    html += `<div class="res-line">Saldo luego del transito: ${p.saldoActual ?? 0}</div>`;
+                }
+            }
+            cont.innerHTML = html;
+            cont.style.display = 'block';
+        }
+
+        function mostrar_limpiarEntradas(limpiar) {
+            matricula.value = '';
+            puestos.value = - 1;
+        }
+
+        async function mostrar_mensaje(mensaje){
+            await mostrarMensaje(mensaje);
+        }
+
+    </script>
+</body>
+</html>
+

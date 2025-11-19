@@ -1,0 +1,238 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.asignar-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezado */
+h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+/* Contenedor de selección */
+.seleccion-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Grupos de formulario */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group select,
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #1a4f8c;
+}
+
+/* Grupo de búsqueda */
+.search-group {
+    display: flex;
+    gap: 10px;
+}
+
+.search-group input {
+    flex: 1;
+}
+
+/* Botones */
+.btn-buscar,
+.btn-asignar {
+    background-color: #1a4f8c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-buscar:hover,
+.btn-asignar:hover {
+    background-color: #153d6f;
+}
+
+/* Información del propietario */
+.info-propietario {
+    margin-top: 30px;
+    border-top: 1px solid #ddd;
+    padding-top: 30px;
+}
+
+.propietario-header {
+    margin-bottom: 30px;
+}
+
+.propietario-datos {
+    display: flex;
+    gap: 30px;
+}
+
+.dato {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.dato span {
+    color: #666;
+    font-size: 14px;
+}
+
+.dato p {
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Tabla de bonificaciones */
+.bonificaciones-asignadas {
+    margin-bottom: 30px;
+}
+
+.bonificaciones-asignadas h2 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    font-weight: 600;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.no-bonificaciones td {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+/* Asignar nueva bonificación */
+.asignar-nueva {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.instrucciones {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Mensajes de error */
+.mensaje-error {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #fde8e8;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Footer */
+footer {
+    margin-top: 30px;
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+}
+
+/* Estilos para estados del propietario */
+.estado-activo {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.estado-deshabilitado {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.estado-suspendido {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.estado-penalizado {
+    color: #fd7e14;
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .seleccion-container {
+        grid-template-columns: 1fr;
+    }
+
+    .search-group {
+        flex-direction: column;
+    }
+
+    .propietario-datos {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-buscar {
+        width: 100%;
+    }
+}

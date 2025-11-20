@@ -1,0 +1,263 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+    background-color: #f8f9ff;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(108, 0, 255, 0.1);
+}
+
+.dashboard-header h1 {
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-header h1::before {
+    content: "🏢";
+    margin-right: 12px;
+    font-size: 24px;
+}
+
+.btn-salir {
+    background-color: transparent;
+    color: #6c00ff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.btn-salir:hover {
+    color: #5a00d9;
+}
+
+/* Información del propietario */
+.info-propietario {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(108, 0, 255, 0.1);
+}
+
+.info-propietario h2 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.propietario-datos {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+}
+
+.dato {
+    flex: 1;
+}
+
+.dato span {
+    color: #666;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.dato p {
+    color: #333;
+    font-size: 16px;
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+#estadoPropietario {
+    color: #28a745;
+}
+
+#saldoPropietario {
+    color: #6c00ff;
+    font-size: 18px;
+}
+
+/* Grid de tablas */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.grid-item {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(108, 0, 255, 0.1);
+}
+
+.grid-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.grid-item h2 {
+    color: #333;
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Tablas */
+.table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #495057;
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f3f4;
+    color: #333;
+    font-size: 13px;
+}
+
+tbody tr:hover {
+    background-color: #f8f9ff;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Notificaciones */
+.notificaciones-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-borrar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-borrar:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* Mensaje de no hay notificaciones */
+.no-notifications {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .propietario-datos {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 10px;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    table {
+        font-size: 12px;
+    }
+    
+    th, td {
+        padding: 8px;
+    }
+}
+
+/* Estilos para estados del propietario */
+.estado-activo {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.estado-deshabilitado {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.estado-suspendido {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.estado-penalizado {
+    color: #fd7e14;
+    font-weight: bold;
+}

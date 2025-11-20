@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignar bonificaciones</title>
+    <link rel="stylesheet" href="asignarBonificaciones.css">
+    <script src="vistaWeb.js"></script>
+    <script src="sse.js"></script>
+</head>
+<body>
+    <script src="utilesVista.js"></script>
+    <div class="asignar-container">
+        <h1>Asignar bonificaciones</h1>
+
+        <div class="seleccion-container">
+            <!-- Bonificaciones definidas -->
+            <div class="form-group">
+                <label for="bonificacion">Bonificaciones definidas</label>
+                <select id="bonificacion" name="bonificacion">
+                </select>
+            </div>
+
+            <!-- Puestos definidos -->
+            <div class="form-group">
+                <label for="puesto">Puestos definidos</label>
+                <select id="puesto" name="puesto">
+                </select>
+            </div>
+        </div>
+
+        <!-- Búsqueda de propietario -->
+        <div class="busqueda-container">
+            <div class="form-group">
+                <label for="cedula">Cédula de identidad</label>
+                <div class="search-group">
+                    <input type="text" id="cedula" name="cedula" placeholder="12345678">
+                    <button id="btnBuscar" onclick="buscarPropietario()" class="btn-buscar">Buscar propietario</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del propietario -->
+        <div id="infoPropietario" class="info-propietario" style="display: none;">
+            <div class="propietario-header">
+                <div class="propietario-datos">
+                    <div class="dato">
+                        <span>Nombre:</span>
+                        <p id="nombrePropietario"></p>
+                    </div>
+                    <div class="dato">
+                        <span>Estado:</span>
+                        <p id="estadoPropietario"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bonificaciones asignadas -->
+            <div class="bonificaciones-asignadas">
+                <h2>Bonificaciones asignadas</h2>
+                <div class="table-container" id="tablaBonificacionesContainer">
+                </div>
+            </div>
+
+            <!-- Asignar nueva bonificación -->
+            <div class="asignar-nueva">
+                <p class="instrucciones">Seleccione bonificación y puesto en las listas de la izquierda y luego asigne.</p>
+                <button id="btnAsignar" onclick="asignarBonificacion()" class="btn-asignar">Asignar bonificación</button>
+            </div>
+        </div>
+
+        <!-- Mensajes de error -->
+        <div id="mensajeError" class="mensaje-error" style="display: none;"></div>
+
+        <footer>
+            <p>© 2025 - Administración</p>
+        </footer>
+    </div>
+
+    <script>
+        urlIniciarVista = "/bonificacion/vistaConectada";
+        urlRegistroSSE = "/bonificacion/registrarSSE";
+        const cedula = document.getElementById('cedula');
+        const infoPropietario = document.getElementById('infoPropietario');
+        const bonificaciones = document.getElementById('bonificacion');
+        const puestos = document.getElementById('puesto');
+        const tablaBonificacionesContainer = document.getElementById('tablaBonificacionesContainer');
+
+        function mostrar_habilitarIngreso(habilitar) {
+            cedula.disabled = !habilitar;
+            infoPropietario.style.display = 'none';
+        }
+
+        function mostrar_bonificaciones(datosBonificaciones) {
+            const html = crearListaDesdeJson({
+                data: datosBonificaciones,
+                campoMostrar: 'nombre',
+                multiple: false,
+                mostrarOpcionInicial: true,
+                id: 'bonificacion'
+            });
+            bonificaciones.innerHTML = html;
+        }
+
+        function mostrar_puestos(datosPuestos) {
+            const html = crearListaDesdeJson({
+                data: datosPuestos,
+                campoMostrar: 'nombre',
+                multiple: false,
+                mostrarOpcionInicial: true,
+                id: 'puesto'
+            });
+            puestos.innerHTML = html;
+        }
+
+        function mostrar_nombrePropietario(nombre) {
+            document.getElementById('nombrePropietario').textContent = nombre;
+        }
+
+        function mostrar_estadoPropietario(estado) {
+            const estadoElement = document.getElementById('estadoPropietario');
+            estadoElement.textContent = estado;
+            
+            estadoElement.className = '';
+            
+            switch(estado.toLowerCase()) {
+                case 'activo':
+                case 'habilitado':
+                    estadoElement.className = 'estado-activo';
+                    break;
+                case 'deshabilitado':
+                    estadoElement.className = 'estado-deshabilitado';
+                    break;
+                case 'suspendido':
+                    estadoElement.className = 'estado-suspendido';
+                    break;
+                case 'penalizado':
+                    estadoElement.className = 'estado-penalizado';
+                    break;
+            }
+        }
+
+        function mostrar_bonificacionesAsignadas(bonificaciones) {
+            infoPropietario.style.display = 'block';
+            if (!bonificaciones || bonificaciones.length === 0) {
+                tablaBonificacionesContainer.innerHTML = '<p class="no-data">Sin bonificaciones asignadas.</p>';
+                return;
+            }
+            tablaBonificacionesContainer.innerHTML = crearTablaDesdeJson(bonificaciones);
+        }
+
+        function buscarPropietario() {
+            const cedulaValue = cedula.value.trim();
+            if (!cedulaValue) {
+                mostrarMensaje('Debe ingresar una cédula');
+                return;
+            }
+            submit('/bonificacion/buscarPropietario', 'cedula=' + cedulaValue);
+        }
+
+        function asignarBonificacion() {
+            const bonificacionId = bonificaciones.value;
+            const puestoId = puestos.value;
+            
+            if (bonificacionId === '-1') {
+                mostrarMensaje('Debe especificar una bonificación');
+                return;
+            }
+            if (puestoId === '-1') {
+                mostrarMensaje('Debe especificar un puesto');
+                return;
+            }
+
+            submit('/bonificacion/asignarBonificacion', 
+                  'bonificacionId=' + bonificacionId + 
+                  '&puestoId=' + puestoId);
+        }
+
+        async function mostrar_mensaje(mensaje){
+            await mostrarMensaje(mensaje);
+        }
+    </script>
+</body>
+</html>

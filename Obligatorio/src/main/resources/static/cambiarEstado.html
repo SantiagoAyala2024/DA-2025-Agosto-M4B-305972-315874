@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar estado de propietario</title>
+    <link rel="stylesheet" href="cambiarEstado.css">
+    <script src="vistaWeb.js"></script>
+    <script src="sse.js"></script>
+</head>
+<body>
+    <script src="utilesVista.js"></script>
+    <div class="cambiar-estado-container">
+        <h1>Cambiar estado de propietario</h1>
+        <p class="descripción">Ingrese la cédula, revise el estado actual y seleccione un nuevo estado (datos de ejemplo).</p>
+
+        <div class="form-container">
+            <!-- Búsqueda de propietario -->
+            <div class="search-section">
+                <div class="form-group">
+                    <label for="cedula">Cédula de identidad</label>
+                    <div class="input-group">
+                        <input type="text" id="cedula" name="cedula" placeholder="12345678">
+                        <button id="btnBuscar" class="btn-buscar">Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selector de estado -->
+            <div class="estado-section" id="estadoSection" style="display: none;">
+                <div class="form-group">
+                    <label for="estado">Estados definidos</label>
+                    <select id="estado" name="estado">
+                        <option value="">Cargando estados...</option>
+                    </select>
+                    <span class="help-text">El estado actual se mostrará preseleccionado.</span>
+                </div>
+                <button id="btnCambiarEstado" class="btn-cambiar-estado" disabled>Cambiar estado</button>
+            </div>
+        </div>
+
+        <!-- Información del propietario -->
+        <div id="infoPropietario" class="info-propietario" style="display: none;">
+            <h2>Propietario</h2>
+            <div class="propietario-datos">
+                <div class="dato-grupo">
+                    <label>Nombre</label>
+                    <p id="nombrePropietario"></p>
+                </div>
+                <div class="dato-grupo">
+                    <label>Estado actual</label>
+                    <p id="estadoActual" class="estado-badge"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensajes de error -->
+        <div id="mensajeError" class="mensaje-error" style="display: none;"></div>
+
+        <footer>
+            <p>© 2025 - Administración</p>
+        </footer>
+    </div>
+    
+    <script>
+        urlIniciarVista = "/cambiarEstado/vistaConectada";
+        urlCierreVista = "/cambiarEstado/vistaCerrada";
+        urlRegistroSSE = "/cambiarEstado/registrarSSE";
+        
+        let estadosDisponibles = [];
+        let propietarioActual = null;
+
+        window.addEventListener('load', function() {
+            inicializarVista();
+        });
+
+        document.getElementById('cedula').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarPropietario();
+            }
+        });
+
+        document.getElementById('btnBuscar').addEventListener('click', function() {
+            buscarPropietario();
+        });
+
+        document.getElementById('btnCambiarEstado').addEventListener('click', function() {
+            cambiarEstado();
+        });
+
+        function inicializarVista() {
+            submit(urlIniciarVista, "");
+        }
+
+        function buscarPropietario() {
+            const cedula = document.getElementById('cedula').value.trim();
+            if (!cedula) {
+                mostrarError('Debe ingresar una cédula');
+                return;
+            }
+            
+            const btnBuscar = document.getElementById('btnBuscar');
+            btnBuscar.disabled = true;
+            btnBuscar.textContent = 'Buscando...';
+            
+            const params = new URLSearchParams();
+            params.append('cedula', cedula);
+            
+            submit("/cambiarEstado/buscarPropietario", params.toString());
+        }
+
+        function cambiarEstado() {
+            const select = document.getElementById('estado');
+            const posEstado = select.selectedIndex;
+            
+            if (posEstado < 0) {
+                mostrarError('Debe seleccionar un estado');
+                return;
+            }
+            
+            const btnCambiar = document.getElementById('btnCambiarEstado');
+            btnCambiar.disabled = true;
+            btnCambiar.textContent = 'Cambiando...';
+            
+            const params = new URLSearchParams();
+            params.append('posEstado', posEstado);
+            
+            submit("/cambiarEstado/cambiarEstado", params.toString());
+        }
+
+        function mostrar_propietario(propietario) {
+            propietarioActual = propietario;
+            
+            document.getElementById('nombrePropietario').textContent = propietario.nombreCompleto || 'N/A';
+            document.getElementById('infoPropietario').style.display = 'block';
+            document.getElementById('estadoSection').style.display = 'block';
+            
+            const btnBuscar = document.getElementById('btnBuscar');
+            btnBuscar.disabled = false;
+            btnBuscar.textContent = 'Buscar';
+        }
+
+        function mostrar_estadoActual(estadoActual) {
+            const estadoElement = document.getElementById('estadoActual');
+            estadoElement.textContent = estadoActual;
+            
+            estadoElement.className = 'estado-badge estado-' + estadoActual.toLowerCase();
+            
+            const select = document.getElementById('estado');
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].textContent === estadoActual) {
+                    select.selectedIndex = i;
+                    break;
+                }
+            }
+            
+            document.getElementById('btnCambiarEstado').disabled = false;
+        }
+
+        function mostrar_estados(estados) {
+            estadosDisponibles = estados;
+            const select = document.getElementById('estado');
+            select.innerHTML = '';
+            
+            estados.forEach((estado, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = estado.nombre;
+                select.appendChild(option);
+            });
+            
+            if (estados.length > 0) {
+                select.disabled = false;
+            }
+        }
+
+        async function mostrar_mensaje(mensaje) {
+            const btnCambiar = document.getElementById('btnCambiarEstado');
+            btnCambiar.disabled = false;
+            btnCambiar.textContent = 'Cambiar estado';
+            
+            await mostrarMensaje(mensaje);
+        }
+
+        async function mostrarError(mensaje) {
+            const btnBuscar = document.getElementById('btnBuscar');
+            const btnCambiar = document.getElementById('btnCambiarEstado');
+            btnBuscar.disabled = false;
+            btnBuscar.textContent = 'Buscar';
+            btnCambiar.disabled = false;
+            btnCambiar.textContent = 'Cambiar estado';
+            
+            await mostrarMensaje(mensaje);
+        }
+
+        async function excepcionDeAplicacion(mensaje) {
+            mostrarError(mensaje);
+        }
+
+        window.addEventListener('beforeunload', function() {
+            if (urlCierreVista) {
+                submit(urlCierreVista, "");
+            }
+        });
+    </script>
+</body>
+</html>
